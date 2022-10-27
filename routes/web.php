@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,14 +18,20 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/login', function(){
-    return view('login');
-})->name('login');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 Route::get('checkout', function(){
     return view('checkout');
 })->name('checkout');
 
-Route::get('success_cheeckout', function(){
+Route::get('success_checkout', function(){
     return view('success_checkout');
 })->name('success_checkout');
+
+// socialite route
+Route::get('sign-in-google', [UserController::class, 'google'])->name('sign-in-google');
+Route::get('auth/google/callback', [UserController::class, 'handleProviderCallback'])->name('google-callback');
+
+require __DIR__.'/auth.php';
