@@ -11,9 +11,15 @@ class HomeController extends Controller
 {
     public function dashboard()
     {
-        $checkouts = Checkout::with('Camp')->whereUserId(Auth::id())->get();
-        return view('user.dashboard', [
-            'checkouts' => $checkouts
-        ]);
+        // switch case untuk menentukan redirect dashboard berdasarkan role
+        switch (Auth::user()->is_admin) {
+            case true:
+                return redirect()->route('admin.dashboard');
+                break;
+            
+            default:
+                return redirect()->route('user.dashboard');
+                break;
+        }
     }
 }
