@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Mail\User\AfterRegister;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
@@ -29,7 +31,13 @@ class UserController extends Controller
             'email_verified_at' => date('Y-m-d H:i:s', time())
         ];
 
-        $user = User::firstOrCreate(['email' => $data['email']], $data); # jika user sudah ada di db, get Datanya (param1). jika user belum ada di db, buat datanya di db lalu get (param2)
+        // $user = User::firstOrCreate(['email' => $data['email']], $data); # jika user sudah ada di db, get Datanya (param1). jika user belum ada di db, buat datanya di db lalu get (param2)
+        $user = User::whereEmail($data['email'])->first();
+        if (!$user)
+        {
+            $user = User::create($data);
+            Mail::to($user->email)->send(new AfterRegister($user));
+        }
         Auth::login($user, true);
         return redirect()->route('welcome');
     }
