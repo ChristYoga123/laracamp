@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Camp;
 use App\Models\Checkout;
+use App\Http\Requests\CheckoutRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -43,7 +44,7 @@ class CheckoutController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Camp $camp)
+    public function store(CheckoutRequest $request, Camp $camp)
     {
         // mapping request data
         $data = $request->all();

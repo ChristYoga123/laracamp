@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Checkout;
 
 class Camp extends Model
 {
@@ -16,10 +17,14 @@ class Camp extends Model
         'price'
     ];
 
+    public function Checkout(){
+        return $this->hasMany(Checkout::class);
+    }
+
     // check apakah user sudah pernah terdaftar di kelas ini
-    public function getIsRegisteredAttriute()
+    public function getIsRegisteredAttribute()
     {
-        if(Auth::check())
+        if(!Auth::check())
         {
             return false;
         }
