@@ -14,8 +14,8 @@ class AddPhoneAndAddressInUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('phone', 15)->after('occupation');
-            $table->text('address')->after('phone');
+            $table->string('phone', 15)->after('occupation')->nullable();
+            $table->text('address')->after('phone')->nullable();
         });
     }
 
