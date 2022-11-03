@@ -19,6 +19,8 @@ class AdminSeeder extends Seeder
             'email' => 'admin@laracamp.com',
             'email_verified_at' => date('Y-m-d H:i:s', time()),
             'password' => bcrypt('sehatselalu11'),
+            'phone' => '082230555413',
+            'address' => 'Jember',
             'is_admin' => true
         ]);
     }
