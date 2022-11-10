@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Camp;
 use App\Models\Checkout;
 use App\Http\Requests\CheckoutRequest;
+use App\Models\Discount;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +61,14 @@ class CheckoutController extends Controller
         $data = $request->all();
         $data['user_id'] = Auth::id();
         $data['camp_id'] = $camp->id;
+
+        // checkout discount
+        if($request->code)
+        {
+            $discount = Discount::whereCode($request->code)->first();
+            $data['discount_id'] = $discount->id;
+            $data['discount_percentage'] = $discount->percentage;
+        }
 
         // update user data
         $user = Auth::user();
@@ -133,16 +142,29 @@ class CheckoutController extends Controller
         $price = $checkout->Camp->price * 1000;
         $checkout->midtrans_booking_code = $orderId;
 
-        $transaction_details = [
-            'order_id' => $orderId,
-            'gross_amount' => $price
-        ];
-
         $item_details[] = [
             'id' => $orderId,
             'price' => $price,
             'quantity' => 1,
             'name' => "Payment for {$checkout->Camp->title} Camp"
+        ];
+
+        $discount_price = 0;
+        if($checkout->Discount)
+        {
+            $discount_price = $price * $checkout->discount_percentage / 100;
+            $item_details[] = [
+                'id' => $checkout->Discount->code,
+                'price' => -$discount_price,
+                'quantity' => 1,
+                'name' => "Checkout {$checkout->Discount->name} {$checkout->Discount->percentage}%"
+            ];
+        }
+
+        $total = $price - $discount_price;
+        $transaction_details = [
+            'order_id' => $orderId,
+            'gross_amount' => $total
         ];
 
         $userData = [
@@ -173,6 +195,7 @@ class CheckoutController extends Controller
             //code...
             $paymentUrl = \Midtrans\Snap::createTransaction($midtrans_params)->redirect_url;
             $checkout->midtrans_url = $paymentUrl;
+            $checkout->total = $total;
             $checkout->save();
 
             return $paymentUrl;

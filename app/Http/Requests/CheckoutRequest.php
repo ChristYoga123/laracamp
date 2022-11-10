@@ -24,13 +24,13 @@ class CheckoutRequest extends FormRequest
      */
     public function rules()
     {
-        $expiredValidation = date('Y-m', time());
         return [
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email,'.Auth::id().',id',
             'occupation' => 'required',
             'phone' => 'required|numeric',
-            'address' => 'required|string'
+            'address' => 'required|string',
+            'code' => 'nullable|string|exists:discounts,code,deleted_at,NULL'
         ];
     }
 }
