@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class CheckoutRequest extends FormRequest
+class DiscountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class CheckoutRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check();
+        return Auth::check() && Auth::user()->is_admin;
     }
 
     /**
@@ -26,11 +26,9 @@ class CheckoutRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'email' => 'required|email|unique:users,email,'.Auth::id().',id',
-            'occupation' => 'required',
-            'phone' => 'required|numeric',
-            'address' => 'required|string',
-            'code' => 'nullable|string|exists:discounts,code,deleted_at,NULL'
+            'code' => 'required|string|max:5|unique:discounts',
+            'description' => 'nullable',
+            'percentage' => 'required|min:1|max:100|numeric'
         ];
     }
 }
